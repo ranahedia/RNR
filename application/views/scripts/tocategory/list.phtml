@@ -1,0 +1,112 @@
+<?php
+$userInfo = Zend_Auth::getInstance()->getStorage()->read();
+?>
+<html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="<?php echo $this->baseUrl() ?>/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src ="<?php echo $this->baseUrl() ?>/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .btn-danger {
+        padding: 1px 8px;
+        border-radius: 15px;
+    }
+
+    .btn-primary {
+        padding: 1px 8px;
+        border-radius: 15px;
+    }
+
+    .col-md-8 {
+        margin-left: 200px;
+    }
+
+    .img-thumbnail{
+        width:120px;
+        height: 90px;
+    }
+    .page-header{
+        color :#286090;
+    }
+    th{
+        color :#286090;        
+    }
+
+</style>
+<body>
+    <?php if ($this->id != NULL) { ?>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8" >
+                    <h1 class="page-header">To Categories
+                        <?php
+                        if (count($userInfo) != 0) {
+                            if ($userInfo->type == "admin") {
+                                ?>
+
+                                <a href="<?php echo $this->baseUrl() . '/tocategory/add/id/' . $this->id; ?>"  style='float: right;' class="btn btn-success" role="button">Add to category</a>              
+                                <?php
+                            }
+                        }
+                        ?>
+                    </h1> 
+                    </br>
+                    <table class="table table-striped" >
+                        <thead>
+                            <tr style="text-align:center">
+                                <th style="text-align:center">Title</th>
+                                <th style="text-align:center">Image</th>
+                                <?php
+                                if (count($userInfo) != 0) {
+                                    if ($userInfo->type == "admin") {
+                                        ?>
+                                        <th style="text-align:center">Lock</th>
+                                        <th style="text-align:center">Action</th>
+                                        <?php
+                                    }
+                                }
+                                ?>
+
+
+                            </tr>
+                        </thead>              
+                        <?php
+                        for ($i = 0; $i < count($this->tocategories); $i++) {
+                            ?>
+                            <tr>
+
+
+                                <td class="text-center" ><a href="http://localhost/RNR/public/thread/list/toCategoryId/<?php echo $this->tocategories[$i]['id']; ?>" class="nav nav-pills nav-justified"><?php echo $this->tocategories[$i]['title']; ?></a>
+                                <td class="text-center" >
+                                    <img  class='img-thumbnail' src="<?php echo $this->baseUrl() . '/images/tocategory/' . $this->tocategories[$i]['picture'] ?>" width="80" height="80">    
+                                </td>
+                                <?php
+                                if (count($userInfo) != 0) {
+                                    if ($userInfo->type == "admin") {
+                                        ?>
+                                        <td class="text-center"><a href="<?php echo $this->baseUrl() ?>/tocategory/lock/id/<?php echo $this->tocategories[$i]['id'] . "/categoryId/" . $this->id; ?>/lock/<?php echo $this->tocategories[$i]['lock']; ?>" ><?php echo $this->tocategories[$i]['lock']; ?></a>
+                                        </td>
+
+                                        <td class="text-center" >
+                                            <a href="<?php echo $this->baseUrl() . '/tocategory/edit/id/' . $this->tocategories[$i]['id'] . "/categoryId/" . $this->id; ?>" class="btn btn-primary" role="button">Edit</a>                   
+                                            <br><br>
+                                            <a href="<?php echo $this->baseUrl() . '/tocategory/delete/id/' . $this->tocategories[$i]['id'] . "/categoryId/" . $this->id; ?>" class="btn btn-danger" role="button">Delete</a>
+                                        </td>
+                                        <?php
+                                    }
+                                }
+                                ?>
+
+                            </tr>
+                            <?php
+                        }
+                    } else {
+                        ?>
+                        <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>  Error ! Page Not Found</div>
+
+                    <?php } ?>
+                    </html>                                
+
+

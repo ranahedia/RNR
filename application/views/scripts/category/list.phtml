@@ -1,0 +1,93 @@
+<?php
+$userInfo = Zend_Auth::getInstance()->getStorage()->read();
+?>
+<html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="<?php echo $this->baseUrl() ?>/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src ="<?php echo $this->baseUrl() ?>/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .btn-danger {
+        padding: 1px 8px;
+        border-radius: 15px;
+    }
+
+    .btn-primary {
+        padding: 1px 8px;
+        border-radius: 15px;
+    }
+
+    .col-md-8 {
+        margin-left: 200px;
+    }
+
+    .img-thumbnail{
+        width:120px;
+        height: 90px;
+    }
+    .page-header{
+        color :#286090;
+    }
+    th{
+        color :#286090;        
+    }
+
+</style>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8" >
+                <h1 class="page-header"> Categories
+                    <?php
+                    if (count($userInfo) != 0) {
+                        if ($userInfo->type == "admin") {
+                            ?>
+                            <a href="<?php echo $this->baseUrl() . '/category/add'; ?>" style='float: right;' class="btn btn-success" role="button">Add Category</a>
+                        <?php }
+                    }
+                    ?>
+                    <br>
+                </h1> 
+                <table class="table table-striped" >
+                    <thead>
+                        <tr style="text-align:center">
+                            <th style="text-align:center">Title</th>
+                            <th style="text-align:center">Image</th>
+                            <?php if (count($userInfo) != 0) {
+                                if ($userInfo->type == "admin") {
+                                    ?>
+                                    <th style="text-align:center">Action</th>
+                        <?php }
+                    }
+                    ?>
+                        </tr>
+                    </thead>
+<?php
+$DOCUMENT_ROOT = $_SERVER['DOCUMENT_ROOT'];
+for ($i = 0; $i < count($this->categories); $i++) {
+    ?>
+                        <tr>
+                            <td class="text-center" ><a href="<?php echo $this->baseUrl() . '/tocategory/list/categoryId/' . $this->categories[$i]['id'] ?>" class="nav nav-pills nav-justified"><?php echo $this->categories[$i]['title']; ?></a>
+                            <td class="text-center" >
+                                <img  class='img-thumbnail' src="<?php echo $this->baseUrl() . '/images/category/' . $this->categories[$i]['picture'] ?>" width="80" height="80">    
+                            </td>
+    <?php if (count($userInfo) != 0) {
+        if ($userInfo->type == "admin") {
+            ?>
+                                    <td class="text-center" >
+                                        <a href="<?php echo $this->baseUrl() . '/category/edit/id/' . $this->categories[$i]['id'] ?>" class="btn btn-primary" >Edit</a>                   
+                                        <br><br>
+                                        <a href="<?php echo $this->baseUrl() . '/category/delete/id/' . $this->categories[$i]['id'] ?>" class="btn btn-danger" >Delete</a>
+                                    </td>
+                            <?php }
+                        }
+                        ?>
+                        </tr>
+    <?php
+}
+?>
+                    </html>                                
+
+

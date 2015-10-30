@@ -1,0 +1,109 @@
+<?php
+$userInfo = Zend_Auth::getInstance()->getStorage()->read();
+?>
+<html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="<?php echo $this->baseUrl() ?>/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src ="<?php echo $this->baseUrl() ?>/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .col-md-8 {
+        margin-left: 10px;
+        width:100%;
+    }
+
+    .btn-danger {
+        padding: 1px 8px;
+        border-radius: 15px;
+    }
+
+    .btn-primary {
+        padding: 1px 8px;
+        border-radius: 15px;
+    }
+
+    .img-thumbnail{
+        width:120px;
+        height: 90px;
+    }
+    .page-header{
+        color :#286090;
+    }
+    th{
+        color :#286090;        
+    }
+
+</style>
+<body>
+    <?php if (count($userInfo) != 0 && $userInfo->type == "admin") { ?>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8" >
+
+                    <p style="text-align:center"><a href="<?php echo $this->baseUrl() . '/user/locksystem'; ?>" class="btn btn-warning" role="button">Lock System</a></p>
+                    <h1 class="page-header"> Users 
+                        <a href="<?php echo $this->baseUrl() . '/user/add'; ?>" style='float: right;' class="btn btn-success" role="button">Add User</a>
+                        <br>
+                    </h1>    
+                    <table class="table table-striped" >
+                        <thead>
+                            <tr style="text-align:center">
+                                <th style="text-align:center">Username</th>
+                                <th style="text-align:center">Email</th>
+                                <th style="text-align:center">Gender</th>
+                                <th style="text-align:center">Country</th>
+                                <th style="text-align:center">Profile picture</th>
+                                <th style="text-align:center">Signature</th>
+                                <th style="text-align:center">Type</th>
+                                <th style="text-align:center">Ban</th>
+                                <th style="text-align:center">Action</th>
+                            </tr>
+                        </thead>
+                        <?php
+                        for ($i = 0; $i < count($this->users); $i++) {
+                            ?>
+                            <tr> 
+
+                            <td style="text-align:center"> <?php echo $this->users[$i]['userName']; ?></td>
+                            <td style="text-align:center"> <?php echo $this->users[$i]['email']; ?> </td>   
+                            <td style="text-align:center"> <?php echo $this->users[$i]['gender']; ?> </td>
+                            <td style="text-align:center"> <?php echo $this->users[$i]['country']; ?> </td>
+                            <td style="text-align:center" >
+                                <img class="img-thumbnail" src="<?php echo $this->baseUrl() . '/images/user/profilePicture/' . $this->users[$i]['profilePicture'] ?>" width="90px" height="90px">  
+                            </td>
+
+                            <td style="text-align:center" >
+                                <img  class="img-thumbnail" src="<?php echo $this->baseUrl() . '/images/user/signature/' . $this->users[$i]['signature'] ?>" width="90px" height="90px">  
+                            </td>
+
+                            <td style="text-align:center" ><a href="<?php echo $this->baseUrl() ?>/user/type/id/<?php echo $this->users[$i]['id']; ?>/type/<?php echo $this->users[$i]['type']; ?>"  >  <?php echo $this->users[$i]['type']; ?> </a></td>
+                            <?php if ($this->users[$i]['type'] == "regular") { ?>
+                                <td style="text-align:center"><a href="<?php echo $this->baseUrl() ?>/user/ban/id/<?php echo $this->users[$i]['id']; ?>/ban/<?php echo $this->users[$i]['ban']; ?>"  >  <?php echo $this->users[$i]['ban']; ?> </a></td>
+                            <?php } else { ?>
+                                <td style="text-align:center"><?php echo $this->users[$i]['ban']; ?></td>
+                            <?php }if ($this->users[$i]['type'] == "regular") { ?>
+                                <td style="text-align:center" >
+                                    <a href="<?php echo $this->baseUrl() ?>/user/edit/id/<?php echo $this->users[$i]['id']; ?>" class="btn btn-primary">Edit</a>
+                                    <br /><br />
+                                    <a href="<?php echo $this->baseUrl() ?>/user/delete/id/<?php echo $this->users[$i]['id']; ?>" class="btn btn-danger" >Delete</a>
+                                </td>
+                            <?php } else { ?>
+                                <td style="text-align:center" >
+                                    <a href="<?php echo $this->baseUrl() ?>/user/edit/id/<?php echo $this->users[$i]['id']; ?>" class="btn btn-primary"  disabled="disabled">Edit</a>
+                                    <br /><br />
+                                    <a href="<?php echo $this->baseUrl() ?>/user/delete/id/<?php echo $this->users[$i]['id']; ?>" class="btn btn-danger" disabled="disabled">Delete</a>
+                                </td>
+
+                            <?php } ?>
+                            <tr/>                   
+                            <?php
+                        }
+                    } else {
+                        ?>
+                        <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>  Error ! You don't have an access to this page.</div>
+
+
+                    <?php }
+                    ?>

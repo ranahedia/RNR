@@ -1,0 +1,86 @@
+<?php
+$userInfo = Zend_Auth::getInstance()->getStorage()->read();
+?>
+<html>    
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="<?php echo $this->baseUrl() ?>/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src ="<?php echo $this->baseUrl() ?>/js/bootstrap.min.js"></script>
+    </head>
+    <style>
+        .col-md-4{
+            margin-left: 450px;
+        }
+
+        .row{
+            width:100%;
+        }
+        .col-md-4 {
+            width: 40%;
+            margin-left: 430px;
+        }
+    </style>
+    <?php if ($this->user != NULL) { ?>
+        <div class="row">
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <div class="caption">
+
+                        <table class="table table-striped" >
+                            <thead>
+                                <tr style="text-align:center">
+                                    <th style="text-align:center"><h3>ProfilePicture</h3> </th>
+                            <th style="text-align:center">        <img  class="thumbnail" width="150px" height="150px" src='<?php echo $this->baseUrl() . '/images/user/profilePicture/' . $this->user['profilePicture']; ?>' width="150px" height="120px"> </th>
+                            </tr> 
+
+                            <th style="text-align:center"><h3>Username</h3> </th>
+
+                            <th style="text-align:center">    <h4><?php echo $this->user['userName'] ?></h4></th>
+                            </tr>
+
+                            <tr style="text-align:center">
+                                <th style="text-align:center">   <h3>Email</h3>  </th>
+                            <th style="text-align:center">  <h4><?php echo $this->user['email'] ?></h4> </th>
+                            </tr>
+                            <tr style="text-align:center">
+                                <th style="text-align:center">  <h3>Country</h3>  </th>
+                            <th style="text-align:center">     <h4><?php echo $this->user['country'] ?></h4> </th>
+                            </tr>
+
+                            <tr style="text-align:center">
+                                <th style="text-align:center">    <h3>Gender</h3>  </th>
+                            <th style="text-align:center">     <h4><?php echo $this->user['gender'] ?></h4> </th>
+                            </tr>
+
+                            <tr style="text-align:center">
+                                <th style="text-align:center">  <h3>Signature</h3>  </th>
+                            <th style="text-align:center">       <img   class="thumbnail" width="150px" height="150px" src='<?php echo $this->baseUrl() . '/images/user/signature/' . $this->user['signature']; ?>' width="150px" height="120px"> </th> 
+                            </tr>
+
+
+                            </thead>
+                        </table>
+                        <?php if (count($userInfo) != 0) {
+                            if ($userInfo->id == $this->user['id']) {
+                                ?>
+                                <p  style="text-align:center"> <a href="<?php echo $this->baseUrl() ?>/user/edit/id/<?php echo $this->user['id']; ?>" class="btn btn-primary" >Edit</a></p>
+
+                            <?php }
+                        }
+                        ?>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    <?php } else {
+        ?>
+        <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>  Error ! Page Not Found</div>
+<?php }
+?>
+</html>

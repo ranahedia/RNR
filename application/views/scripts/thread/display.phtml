@@ -1,0 +1,371 @@
+<?php
+$userInfo = Zend_Auth::getInstance()->getStorage()->read();
+if (count($userInfo) != 0) {
+    $id = $userInfo->id;
+    $userName = $userInfo->userName;
+    $profilePicture = $userInfo->profilePicture;
+}
+?>
+<html>    
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="<?php echo $this->baseUrl() ?>/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src ="<?php echo $this->baseUrl() ?>/js/bootstrap.min.js"></script>
+    </head>
+    <style>
+        .em{
+            width: 20px;
+            height: 20px;
+        }
+        .col-md-4{
+            margin-left: 270px;
+            width:60%;
+        }
+
+        .row{
+            width:100%;
+        }
+        .btn-danger {
+            padding: 1px 8px;
+            border-radius: 15px;
+        }
+
+        .btn-primary {
+            padding: 1px 8px;
+            border-radius: 15px;
+        }
+        #icon{
+            width: 30%;
+            margin-left: 690px;
+        }
+
+    </style>
+    <?php if (count($this->thread) != 0) { ?>
+        <div class="row">
+            <div class="col-sm-6 col-md-4">
+
+                <div class="thumbnail">
+
+                    <img style="float:left;" src="<?php echo $this->baseUrl() . '/images/user/signature/' . $this->image; ?>" class="thumbnail" width="100px" height="100px"></img> 
+                    <strong><h3><a href="http://localhost/RNR/public/User/display/id/<?php echo $this->id; ?>"><?php echo $this->user; ?></a></h3></strong>
+                    <img class="thumbnail" width="180px" height="200px" src='<?php echo $this->baseUrl() . '/images/thread/' . $this->thread['picture']; ?>' width="200px" height="200px">
+
+                   
+                    <div class="caption">
+                        <h3><?php echo $this->thread['title'] ?></h3>
+                        <p><?php echo $this->thread['body'] ?></p>
+                    </div>
+                    <?php
+                    if (count($userInfo) != 0) {
+                        if ($this->thread['userId'] == Zend_Auth::getInstance()->getStorage()->read()->id || Zend_Auth::getInstance()->getStorage()->read()->type == "admin") {
+                            ?>
+                            <p>
+                                <a href="<?php echo $this->baseUrl() . '/thread/delete/id/' . $this->thread['id'] . '/toCategoryId/' . $this->toCategoryId; ?>" class="btn btn-danger" role="button">Delete</a>
+                            </p>
+                            <?php
+                        }
+                    }
+                    ?>
+
+                    <?php
+                    if (count($userInfo) != 0) {
+                        if ($userInfo->type == "admin") {
+                            ?>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+
+                <div class="thumbnail" id="comments">
+                    <h3>Comments                 
+                        <?php
+                        if (count($userInfo) != 0) {
+                            if ($this->lock == "off" || $userInfo->type == "admin") {
+                                ?>
+                                <a onclick="displayInputTxt('comm')" class="btn btn-info" role="button" style="float: right;">Add Comment</a> 
+                                <?php
+                            }
+                        }
+                        ?>
+                    </h3>
+
+                    <input type="button" id="enter" onclick="addcomment()" style="display:none;" >
+                    <input type="text" class="form-control"  id="comm" style="display:none;" onkeydown="if (event.keyCode == 13)
+                                document.getElementById('enter').click()" placeholder="Write a comment..."></input><br/>
+                    <input type="text" id="threadId" value=<?php echo $this->thread['id']; ?> hidden>  </input>
+
+                    <?php
+                    for ($j = 0; $j < count($this->comments); $j++) {
+                        $comment = $this->comments[$j]['body'];
+                        ?>
+
+                        <input type="button" id="<?php echo $this->comments[$j]['id']; ?>" onclick="editcomment(id)" style="display:none;" >
+                        <div class="thumbnail" id="<?php echo $this->comments[$j]['id']; ?>"> 
+                            <p>
+                                <img style="float:left;" src="<?php echo $this->baseUrl() . '/images/user/profilePicture/' . $this->images[$j]; ?>" class="thumbnail" width="50px" height="50px"></img>
+                                <strong><a href="<?php echo $this->baseUrl() . "/user/display/id/" . $this->ids[$j]; ?>" ><?php echo $this->names[$j]; ?></a></strong>
+                                <?php
+                                for ($x = 0; $x < count($this->emoticons); $x++) {
+                                    $char = $this->emoticons[$x]['chars'];
+                                    $imageTag = " <img src=" . $this->baseUrl() . "/images/emoticons/" . $this->emoticons[$x]['image'] . " class=em>";
+                                    $comment = str_replace($char, $imageTag, $comment);
+                                }
+                                ?>
+                                <span id="<?php echo "b" . $this->comments[$j]['id']; ?>"> 
+                                    <?php echo $comment; ?>
+                                </span>
+                                <input type="text" id="<?php echo "t" . $this->comments[$j]['id']; ?>" class="form-control" value="<?php echo $this->comments[$j]['body']; ?>" style="display:none;" onkeydown="if (event.keyCode == 13)
+                                            document.getElementById('<?php echo $this->comments[$j]['id']; ?>').click(this.id)"/>
+                            </p>
+                            <?php
+                            if (count($userInfo) != 0) {
+                                if ($this->comments[$j]['userId'] == Zend_Auth::getInstance()->getStorage()->read()->id || Zend_Auth::getInstance()->getStorage()->read()->type == "admin") {
+                                    ?>
+                                    <p id="icon">
+                                        <a onclick="displayInputTxt('<?php echo "t" . $this->comments[$j]['id']; ?>')" id="<?php echo "e" . $this->comments[$j]['id']; ?>">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </a> 
+                                        <a  onclick="deletecomment(this.id)" id="<?php echo "d" . $this->comments[$j]['id']; ?>">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    </p>
+                                <?php } else { ?>
+                                    <p> &nbsp;</p>
+                                    <?php
+                                }
+                            } else {
+                                ?>
+                                <p> &nbsp;</p>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div >
+        </div>
+        <div  class="thumbnail" style="display:none;" id="info">
+            <p>
+                <img style="float:left;"class="thumbnail"  src="<?php echo $this->baseUrl() . '/images/user/profilePicture/' . $profilePicture; ?>"  width="50px" height="50px"></img>
+                <strong><a><?php echo $userName; ?></a></strong>
+            </p>
+        </div> 
+    <?php } else {
+        ?>
+        <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>  Error ! Page Not Found</div>
+    <?php }
+    ?>
+</html>
+
+<script>
+
+
+    function displayInputTxt(id) {
+        document.getElementById(id).style.display = "block";
+    }
+
+    function addcomment() {
+
+        var txt = document.getElementById("comm");
+        var body = txt.value;
+        if (body != "") {
+            if (window.XMLHttpRequest) {
+                ajaxRequest = new XMLHttpRequest();
+            } else {
+                ajaxRequest = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            ajaxRequest.open("GET", "../../../../../comment/add/body/" + body + "/threadId/" + document.getElementById("threadId").value, true);
+            ajaxRequest.send();
+
+            ajaxRequest.onreadystatechange = function () {
+                if (ajaxRequest.readyState == 4 && ajaxRequest.status == 200) {
+                    id = ajaxRequest.responseText;
+                    console.log(id);
+
+                    var commdiv = document.getElementById("comments");
+
+                    var input = document.createElement("input");
+                    input.setAttribute("type", "button");
+                    input.setAttribute("id", id);
+                    input.style.display = "none";
+                    input.setAttribute("onclick", "editcomment(id);");
+                    commdiv.appendChild(input);
+
+                    var infodiv = document.createElement("div");
+                    infodiv.setAttribute("class", "thumbnail");
+                    infodiv.setAttribute("id", id);
+                    commdiv.appendChild(infodiv);
+
+                    var par = document.createElement("p");
+                    infodiv.appendChild(par);
+
+                    var par2 = document.createElement("p");
+                    par2.setAttribute("id", "icon");
+                    infodiv.appendChild(par2);
+
+                    var hrefedit = document.createElement("A");
+                    par2.appendChild(hrefedit);
+                    hrefedit.setAttribute("id", "e" + id);
+                    hrefedit.setAttribute("onclick", "displayInputTxt(" + "'" + "t" + id + "'" + ");");
+
+                    var edit = document.createElement("span");
+                    edit.setAttribute("class", "glyphicon glyphicon-pencil");
+                    hrefedit.appendChild(edit);
+
+                    var hrefdelete = document.createElement("A");
+                    hrefdelete.setAttribute("id", "d" + id);
+                    hrefdelete.setAttribute("onclick", "deletecomment(this.id);");
+                    par2.appendChild(hrefdelete);
+
+                    var del = document.createElement("span");
+                    del.setAttribute("class", "glyphicon glyphicon-trash");
+                    hrefdelete.appendChild(del);
+
+                    var img = document.createElement("img");
+                    img.setAttribute("class", "thumbnail");
+                    img.setAttribute("style", "float:left;");
+                    img.setAttribute("width", "50px");
+                    img.setAttribute("height", "50px");
+                    img.setAttribute("src", "<?php echo $this->baseUrl() . '/images/user/profilePicture/' . $profilePicture; ?>");
+                    par.appendChild(img);
+
+                    var href = document.createElement("A");
+                    href.setAttribute("href", "<?php echo $this->baseUrl() . "/user/display/id/" . $id ?>");
+
+                    href.innerHTML = "<?php echo $userName; ?>";
+                    par.appendChild(href);
+
+                    var span = document.createElement("span");
+                    span.setAttribute("id", "b" + id);
+                    var str = body;
+                    var stringArray = str.split(/(\s+)/);
+                    var em = document.createElement("img");
+                    em.setAttribute("width", "20px");
+                    em.setAttribute("height", "20px");
+                    for (var i = 0; i < stringArray.length; i++) {
+                        if (stringArray[i] == ":)") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/smile.gif '; ?>");
+                            span.appendChild(em);
+                        }
+                        else if (stringArray[i] == "=D") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/happy.png '; ?>");
+                            span.appendChild(em);
+                        }
+                        else if (stringArray[i] == "^_^") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/satisfied.png '; ?>");
+                            span.appendChild(em);
+                        }
+                        else if (stringArray[i] == ":-h") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/wave.gif '; ?>");
+                            span.appendChild(em);
+                        }
+                        else if (stringArray[i] == "a:") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/angle.gif '; ?>");
+                            span.appendChild(em);
+                        }
+                        else if (stringArray[i] == ":(") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/sad.gif '; ?>");
+                            span.appendChild(em);
+                        }
+                        else if (stringArray[i] == ":*") {
+                            em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/kis.gif '; ?>");
+                            span.appendChild(em);
+                        }
+                        else {
+                            span.appendChild(document.createTextNode(stringArray[i]));
+                        }
+                    }
+                    par.appendChild(span);
+
+
+                    var text = document.createElement("input");
+                    text.setAttribute("type", "text");
+                    text.setAttribute("id", "t" + id);
+                    text.style.display = "none";
+                    text.setAttribute("class", "form-control");
+                    text.setAttribute("value", body);
+                    text.setAttribute("onkeydown", "if (event.keyCode == 13){document.getElementById(" + "'" + id + "'" + ").click(this.id);}");
+
+                    par.appendChild(text);
+                    txt.value = "";
+                    txt.style.display = "none";
+                }
+            }
+        }
+    }
+
+    function deletecomment(id) {
+        var commId = id.substring(1);
+        var comm = document.getElementById(commId);
+        comm.remove();
+        if (window.XMLHttpRequest) {
+            ajaxRequest = new XMLHttpRequest();
+        } else {
+            ajaxRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        ajaxRequest.open("GET", "../../../../../comment/delete/id/" + commId, true);
+        ajaxRequest.send();
+        ajaxRequest.onreadystatechange = function () {
+            if (ajaxRequest.readyState == 4 && ajaxRequest.status == 200) {
+            }
+        }
+    }
+
+    function editcomment(id) {
+        var body = document.getElementById("t" + id).value;
+        if (body != "") {
+            if (window.XMLHttpRequest) {
+                ajaxRequest = new XMLHttpRequest();
+            } else {
+                ajaxRequest = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            var span = document.getElementById("b" + id);
+            span.innerHTML = "";
+            var str = body;
+            var stringArray = str.split(/(\s+)/);
+            console.log(stringArray);
+            var em = document.createElement("img");
+            em.setAttribute("width", "20px");
+            em.setAttribute("height", "20px");
+            for (var i = 0; i < stringArray.length; i++) {
+                if (stringArray[i] == ":)") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/smile.gif '; ?>");
+                    span.appendChild(em);
+                }
+                else if (stringArray[i] == "=D") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/happy.png '; ?>");
+                    span.appendChild(em);
+                }
+                else if (stringArray[i] == "^_^") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/satisfied.png '; ?>");
+                    span.appendChild(em);
+                }
+                else if (stringArray[i] == ":-h") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/wave.gif '; ?>");
+                    span.appendChild(em);
+                }
+                else if (stringArray[i] == "a:") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/angle.gif '; ?>");
+                    span.appendChild(em);
+                }
+                else if (stringArray[i] == ":(") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/sad.gif '; ?>");
+                    span.appendChild(em);
+                }
+                else if (stringArray[i] == ":*") {
+                    em.setAttribute("src", "<?php echo $this->baseUrl() . '/images/emoticons/kis.gif '; ?>");
+                    span.appendChild(em);
+                }
+                else {
+                    span.appendChild(document.createTextNode(stringArray[i]));
+                }
+            }
+            document.getElementById("t" + id).style.display = "none";
+            ajaxRequest.open("GET", "../../../../../comment/edit/id/" + id + "/body/" + body, true);
+            ajaxRequest.send();
+
+        }
+    }
+</script>

@@ -1,0 +1,30 @@
+<?php
+echo $this->doctype();
+$DOCUMENT_ROOT = $_SERVER['DOCUMENT_ROOT'];
+$userInfo = Zend_Auth::getInstance()->getStorage()->read();
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />        
+        <title>RNR</title>
+    </head>
+
+    <?php
+    if (!Zend_Auth::getInstance()->hasIdentity() || $userInfo->ban=="on" ) {             
+        include ($DOCUMENT_ROOT . '/RNR/public/design/header.php');
+    echo $this->layout()->content;        
+        ?>
+    </html>
+<?php } else {
+    $userInfo = Zend_Auth::getInstance()->getStorage()->read();
+    if ($userInfo->type == "regular" && $userInfo->ban=="off") {
+            include ($DOCUMENT_ROOT . '/RNR/public/design/userHeader.php');
+        } elseif ($userInfo->type == "admin" && $userInfo->ban=="off" ) {
+            include ($DOCUMENT_ROOT . '/RNR/public/design/adminHeader.php');           
+        }
+        echo $this->layout()->content;
+    ?>
+
+<?php }
+?>
